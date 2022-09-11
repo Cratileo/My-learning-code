@@ -16,7 +16,7 @@ int main()
 	cout << "please leave your star for this service:";
 	int star;
 	cin >> star;
-	if (star > 1 && star < 5)
+	if (star >= 1 && star <= 5)
 		if (star >= 1 && star <= 3)
 		{
 			cout << "please leave your comment,we will imporve it:\n";
