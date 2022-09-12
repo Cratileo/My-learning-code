@@ -10,6 +10,11 @@ int main()
 	cout << "Please enter a number in N gathers: ______\b\b\b\b\b\b";//试试输入9以上的数字，会有惊喜
 	int number;
 	cin >> number;
+	while (number >= 9 || number <= 0)
+	{
+		cout << "your number is over the edge,please give me another number\n";
+		cin >> number;
+	}
 	double temp = num_input(number);
 	cout << endl << temp;
 	anc(number);
