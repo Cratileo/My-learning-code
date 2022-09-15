@@ -18,6 +18,7 @@ void domitory();        //宿舍事件
 void supermaket();     //西区教超事件
 void henu();          //华师大事件
 char check(char n);   //选择校验函数
+void shuiyuan();      //水源事件
 
 using std::cout;
 using std::cin;
@@ -61,7 +62,7 @@ void student_free()
 {
 
 	cout << "You are a lucky guy.Must't be lock in the domitory.\n";
-	cout << "Now you will go to ";
+	cout << "Now you will go to (";
 	system("pause");
 	if (u(e) == 0)
 	{
@@ -120,19 +121,87 @@ void student_outside()
 	cout << "Now you are in the Shanghai Hongqiao Int' Airport,and will go back to SJTU\n";
 	cout << "It seems you are so boring,At this time you want:\n";
 	cout << "A)Play 'Yuanshen'       B)Look through Shuiyuan\n";
-	char* choice = new char;
-	cin >> choice;
-	strlwr(choice);
-	while (!(strcmp(choice, "a") || strcmp(choice, "b")))
-	{
-		cout << "\nTell me your choice OK?:";
-		cin >> choice;
-		cin.clear();
-	}
+	char *choice=check();
 	if (strcmp(choice, "a"))
 	{
 		cout << "miHoYo's games always are full of attractive.Unconsciously,you arrive SJTU.\n";
 		cout << "However,you feel something strange on the gate,This time,you: \n";
 		cout << "A)just go ahead,it is normal in SJTU   B)Look Shuiyuan\n";
+		cout << "You choice is: ";
+		char *input = check();
+		if (strcmp(input, "a"))
+		{
+			if (c(e) == 0)
+			{
+				cout << "\nluckily,you are safe....temporarily\n";
+				student_free();
+			}
+			else if (c(e) == 1)
+			{
+				cout << "Shit!Your domitory building have a suspector,you need to be quarantined two days.\n";
+				student_lock();
+			}
+		}
+		else
+		{
+			shuiyuan();
+		}
+		delete input;
+	}
+	else
+	{
+		shuiyuan();
+	}
+	delete choice;
+}
+
+void student_quarantined()
+{
+	cout << "You have been quarantined at hotal outschool for 10 days.\n";
+	cout << "You don't have any choice,good luck for you.\n";
+	cout << "oh!I forget it.You can choose which days you want to be transpotated.(\n";
+}
+
+void cainiao()
+{
+	cout << "Get the express parcel is always a delighting thing.\n";
+	cout << "-------------------1days after-------------------\n";
+	cout << "Messages posted on shuiyuan makes you scared.\n";
+	for (int i = 0; i < 7; ++i)
+	{
+		cout << "one day pass...\n";
+		if (c(e) == 0)
+		{
+			cout << "Strangely,today nobody find you or call you.\n";
+		}
+		else
+		{
+			cout << "the big thing is coming";
+			student_quarantined();
+		}
+	}
+}
+
+void domitory()
+{
+	cout << "You decide to stay at your domitory to sleep.\n";
+	cout << "-------------------1days after-------------------\n";
+	cout << "You are hungery now.";
+	if (c(e) == 0)
+	{
+		cout << "but luckily you have enough food storage in your room.\n";
+		cout << "you don't need to go to buy anything.\n";
+	}
+	else
+	{
+		cout << "What's worse,you decide to buy something.\n";
+		cout << "you decide go to:\n";
+		cout << "A)Edu-supermarket in East area.\n";
+		cout << "B)store around the canteen.\n";
+		char *choice = check();
+		if (strcmp(choice, "a"))
+		{
+
+		}
 	}
 }
