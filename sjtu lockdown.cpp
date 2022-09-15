@@ -17,7 +17,7 @@ void cainiao();          //菜鸟驿站事件
 void domitory();        //宿舍事件
 void supermaket();     //西区教超事件
 void henu();          //华师大事件
-char check(char n);   //选择校验函数
+auto check();   //选择校验函数
 void shuiyuan();      //水源事件
 
 using std::cout;
@@ -30,7 +30,6 @@ int main()
 	cout << "in this game,you will play one of various role in lockdown life.\n";
 	cout << "now you can start to enjoy your remote class or quarantined life,";
 	cout << "and it is absolutely random for your character.\n";
-	cout << "";
 	if (u(e) == 0)
 		student_free();
 	else if (u(e) == 1)
@@ -41,6 +40,22 @@ int main()
 		student_quarantined();
 	else
 		cout << "Something goes wrong,please restart the progress!\a";
+	cout << "Game over.Thanks for your play.\n"
+		<< "Do you want to look something interesting?\n";
+	char* n = new char;
+	cin >> n;
+	strlwr(n);
+	while (!(strcmp(n, "y") || strcmp(n, "n")))
+	{
+		cout << "\nTell me your choice OK?:";
+		cin >> n;
+		cin.clear();
+	}
+	if (strcmp(n, "y"))
+	{
+		cout << "少女折寿中……\n";
+	}
+	_sleep(5 * 1000);
 	return 0;
 }
 
@@ -121,7 +136,7 @@ void student_outside()
 	cout << "Now you are in the Shanghai Hongqiao Int' Airport,and will go back to SJTU\n";
 	cout << "It seems you are so boring,At this time you want:\n";
 	cout << "A)Play 'Yuanshen'       B)Look through Shuiyuan\n";
-	char *choice=check();
+	char* choice = check();
 	if (strcmp(choice, "a"))
 	{
 		cout << "miHoYo's games always are full of attractive.Unconsciously,you arrive SJTU.\n";
@@ -191,6 +206,8 @@ void domitory()
 	{
 		cout << "but luckily you have enough food storage in your room.\n";
 		cout << "you don't need to go to buy anything.\n";
+		cout << "-------------------7days after-------------------\n"
+			 << "One week pass,life return peace,Now you can move freely";
 	}
 	else
 	{
@@ -201,7 +218,40 @@ void domitory()
 		char *choice = check();
 		if (strcmp(choice, "a"))
 		{
-
+			supermaket();
 		}
+		else
+		{
+			cout << "You come to store to buy lots goods.\n";
+			cout << "-------------------1days after-------------------\n";
+			cout << "Luckily,you are still safe.\n";
+		}
+		delete choice;
 	}
+}
+
+void supermaket()
+{
+	cout << "You come to Edu-supermarket in East area and buy lots goods.\n";
+	cout << "-------------------1days after-------------------\n";
+	cout << "Shit you have become a suspect.Now you need to be quarantined.\n";
+	student_quarantined();
+}
+
+void henu()
+{
+	cout << "You decide to apply a mutiple-code to run to HENU\n"
+		<< "At the temple gate,security let you rush out fast.\n"
+		<< "You feel puzzled.After leave SJTU,you sign in shuiiyuan want to understand what's happen.\n";
+	shuiyuan();
+	cout << "---------------You are a lucky dog---------------\n"
+		<< ">>>>>Hidden Achievement:Run!<<<<<";
+}
+
+void shuiyuan()
+{
+	cout << "You open the shuiyuan community,hoping to find some post.\n"
+		<< "You find the top one saying the outbreak in campus.\n"
+		<< "Run now!\n"
+		<< "You feel delight for your escape.\n";
 }
