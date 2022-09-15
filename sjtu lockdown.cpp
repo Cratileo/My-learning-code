@@ -3,6 +3,7 @@
 #include<string>
 #include<random>
 #include<Windows.h>
+#include<cstring>
 
 std::default_random_engine e;
 std::uniform_int_distribution<unsigned> u(0, 3);
@@ -30,6 +31,7 @@ int main()
 	cout << "in this game,you will play one of various role in lockdown life.\n";
 	cout << "now you can start to enjoy your remote class or quarantined life,";
 	cout << "and it is absolutely random for your character.\n";
+	srand(time(NULL));
 	if (u(e) == 0)
 		student_free();
 	else if (u(e) == 1)
@@ -39,12 +41,12 @@ int main()
 	else if (u(e) == 3)
 		student_quarantined();
 	else
-		cout << "Something goes wrong,please restart the progress!\a";
+		cout << "Something goes wrong,please restart the progress!\a\n";
 	cout << "Game over.Thanks for your play.\n"
 		<< "Do you want to look something interesting?\n";
 	char* n = new char;
 	cin >> n;
-	strlwr(n);
+	_strlwr_s(n,strlen(n)+1);
 	while (!(strcmp(n, "y") || strcmp(n, "n")))
 	{
 		cout << "\nTell me your choice OK?:";
@@ -55,7 +57,7 @@ int main()
 	{
 		cout << "少女折寿中……\n";
 	}
-	_sleep(5 * 1000);
+	Sleep(5 * 1000);
 	return 0;
 }
 
@@ -63,7 +65,7 @@ auto check()
 {
 	char* n = new char;
 	cin >> n;
-	strlwr(n);
+	_strlwr_s(n,strlen(n)+1);
 	while (!(strcmp(n, "a") || strcmp(n, "b")))
 	{
 		cout << "\nTell me your choice OK?:";
@@ -79,6 +81,7 @@ void student_free()
 	cout << "You are a lucky guy.Must't be lock in the domitory.\n";
 	cout << "Now you will go to (";
 	system("pause");
+	srand(time(NULL));
 	if (u(e) == 0)
 	{
 		cout << "CaiNiao station.\n";
@@ -120,7 +123,7 @@ void student_lock()
 		if (strcmp(input, "a"))
 		{
 			cout << "\nSir,this way";
-			_sleep(3 * 1000);
+			Sleep(3 * 1000);
 			//ShellExecute(NULL, "open", "https://shuiyuan.sjtu.edu.cn/", NULL, NULL, SW_SHOWNORMAL);//先不管这个了
 		}
 		else
@@ -146,6 +149,7 @@ void student_outside()
 		char *input = check();
 		if (strcmp(input, "a"))
 		{
+			srand(time(NULL));
 			if (c(e) == 0)
 			{
 				cout << "\nluckily,you are safe....temporarily\n";
@@ -185,6 +189,7 @@ void cainiao()
 	for (int i = 0; i < 7; ++i)
 	{
 		cout << "one day pass...\n";
+		srand(time(NULL));
 		if (c(e) == 0)
 		{
 			cout << "Strangely,today nobody find you or call you.\n";
@@ -202,6 +207,7 @@ void domitory()
 	cout << "You decide to stay at your domitory to sleep.\n";
 	cout << "-------------------1days after-------------------\n";
 	cout << "You are hungery now.";
+	srand(time(NULL));
 	if (c(e) == 0)
 	{
 		cout << "but luckily you have enough food storage in your room.\n";
