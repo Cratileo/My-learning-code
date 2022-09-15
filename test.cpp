@@ -2,7 +2,7 @@
 #include<ctime>
 int main()
 {
-    using namespace sttd;
+    using namespace std;
     char ch;
     cin >> ch;
     while (ch != '/')
@@ -10,5 +10,5 @@ int main()
         cout << ch;
         cin >> ch;
     }
-    return 0
+    return 0；
 }
