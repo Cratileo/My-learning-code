@@ -158,9 +158,7 @@ void student_lock()
 			system("pause");
 		}
 		else
-		{
 			cout << "\n水源对线有啥意思啊，还是原神好玩捏\n";
-		}
 		//delete input;
 		for (int i = 0; i < 6; ++i)
 		{
@@ -258,9 +256,7 @@ void cainiao()
 	{
 		cout << "一天过去了...\n";
 		if (c(e) == 0)
-		{
 			cout <<"第" <<i+1<< "天，今日无事\n\n";
-		}
 		else
 		{
 			cout << "该来的还是要来的……";
@@ -289,9 +285,7 @@ void domitory()
 		cout << "A)东区教超         B)三餐便利店\n";
 		char* choice = check();
 		if (!(strcmp(choice, "a")))
-		{
 			supermaket();
-		}
 		else
 		{
 			cout << "买了一堆快乐水，真快乐！\n";
@@ -341,28 +335,19 @@ void shuiyuan(int n)
 				<< "B)我就不信邪了，还能重返三月不成\n";
 			auto choice_2 = check();
 			if (!(strcmp(choice_2, "a")))
-			{
 				happyend();
-			}
 			else
 				enter();
 		}
 		else
-		{
 			happyend();
-		}
-
 	}
 	else
 	{
 		if (!(strcmp(choice, "a")))
-		{
 			enter();
-		}
 		else
-		{
 			happyend();
-		}
 	}
 }
 
