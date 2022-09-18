@@ -84,6 +84,7 @@ int main()
 		cout << "少女折寿中……\n";
 		Sleep(1500);
 	}
+	delete n;
 	
 	return 0;
 }
