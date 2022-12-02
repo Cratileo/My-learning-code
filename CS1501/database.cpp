@@ -5,7 +5,10 @@
 #include<vector>
 #include<cstdlib>
 #include<format>//debug临时引用，release中记得删
+#include<memory>
 using namespace std;
+
+static Processtodo proc;
 
 extern int datanum = 0;//初始学生数据条数
 
@@ -15,8 +18,6 @@ bool checkaccount(string acc, string pw) {
 	return 1;
 }
 
-Studentinfo st;
-
 void streamprocess(string& str) {
 	stringstream ss(str);
 	string temp;
@@ -25,7 +26,7 @@ void streamprocess(string& str) {
 	while (getline(ss, temp, ';'))
 		temparr.push_back(temp);
 	for (auto& arr : temparr) {
-		st.Infoprocess(arr);
+		proc.Infoprocess(arr);
 	}
 }
 //暂时先放着，但界面要和后端分离，之后重构
@@ -33,7 +34,9 @@ void SearchPCR() {
 	cls();
 	gotoxy(10, 30, "[ESC]");
 	gotoxy(0, 5);
-	st.readtest();
+	
+	proc.readtest();
+
 	int keyin;
 	while (1) {
 		keyin = _getch() - 48;
@@ -44,8 +47,9 @@ void SearchPCR() {
 	}
 }
 
-void Studentinfo::Infoprocess(string& str) {
+void Processtodo::Infoprocess(string& str) {
 	stringstream ss(str);
+	Studentinfo st;
 	string temp;
 	vector<string>temparr;
 
@@ -62,11 +66,11 @@ void Studentinfo::Infoprocess(string& str) {
 	//写入data.dat(二进制方式）   
 
 	//数据查重
-	if (SearchAndCheck(temparr[1])!="pass") {
+	/*if (SearchAndCheck(temparr[1]) != "pass") {
 		gotoxy(25, 28, "ERROR:存在重复学号:");
 		Sleep(2000);
 		return;
-	}
+	}*/
 
 	ofstream fout(file, ios_base::out | ios_base::app | ios_base::binary);
 	if (!fout.is_open()) {
@@ -75,27 +79,28 @@ void Studentinfo::Infoprocess(string& str) {
 	}
 
 
-	name = temparr[0];
-	id = temparr[1];
-	telephone = temparr[2];
-	school = temparr[3];
-	address = temparr[4];
-	classnum = temparr[5];
-	vaccine = temparr[6];
+	st.name = temparr[0];
+	st.id = temparr[1];
+	st.telephone = temparr[2];
+	st.school = temparr[3];
+	st.address = temparr[5];
+	st.classnum = temparr[4];
+	st.vaccine = temparr[6];
 
-	fout.write((char*)this, sizeof this);	
+	fout.write((char*)&st, sizeof Studentinfo);	
 	fout.close();
 }
 
-string Studentinfo::SearchAndCheck(const string &idT) {
+string Processtodo::SearchAndCheck(const string &idT) {
+	Studentinfo st;
 	fstream finout;
 	string defaul{"pass"};
 	finout.open(file, ios::in | ios::out | ios::binary);
 	if (finout.is_open()) {
 		finout.seekg(0);
-		while (finout.read((char*)this, sizeof this)) {
-			if (id == idT) {
-				cout << name;
+		while (finout.read((char*)&st, sizeof st)) {
+			if (st.id == idT) {
+				cout << st.name;
 				defaul = idT;
 				break;
 			}
@@ -105,19 +110,25 @@ string Studentinfo::SearchAndCheck(const string &idT) {
 	return defaul;
 }
 
-void Studentinfo::readtest() {
-	fstream fread;
-	fread.open(file, ios_base::in | ios_base::out | ios_base::binary);
-	fread.seekg(0);
-	while (fread.read((char*)this, sizeof this)) {
-		cout << format("{} {} {} {} {} {} {}", name, id, telephone, school, address, classnum, vaccine) << endl;
-	}
-	if (fread.eof())
-		fread.clear();
-	else
+void Processtodo::readtest() {
+	ifstream fread;
 	{
-		cerr << "ERROR";
-		exit(EXIT_FAILURE);
+		Studentinfo st;
+		
+		fread.open(file, ios_base::in | ios_base::binary);
+		fread.seekg(0);
+		while (fread.read((char*)&st, sizeof Studentinfo)) {
+			cout <<
+				format("{} {} {} {} {} {} {}", st.name, st.id, st.telephone, st.school, st.address, st.classnum, st.vaccine)
+				<< endl;
+		}
+		if (fread.eof())
+			fread.clear();
+		else
+		{
+			cerr << "ERROR";
+			exit(EXIT_FAILURE);
+		}
 	}
 	fread.close();
 }

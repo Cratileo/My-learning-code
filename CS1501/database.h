@@ -3,6 +3,7 @@
 using std::string;
 
 class Studentinfo {
+public:
 	string name = "NA";
 	string id = "000";
 	string telephone = "000";
@@ -21,12 +22,19 @@ class Studentinfo {
 		string reason = "NA";
 		string campus = "NA";
 	};
+};
+
+class Processtodo {
 public:
+	Studentinfo st[100];
+
 	string PCRtest();//核酸检测结果查询API
 	void Infoprocess(string&);//二次分割数据入库
 	string SearchAndCheck(const string&);//数据搜索与查重
 	void readtest();//test
 };
+
+
 
 bool checkaccount(string,string);  //校验输入账号是否存在
 

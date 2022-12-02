@@ -43,7 +43,7 @@ void gotoxy(const int x, const int y, std::string str)
     }
 
     //产生一个 [l,r] 范围的随机数 
-    int random(int l, int r)
+    int random(int l, int r) 
     {
         std::uniform_int_distribution<time_t> u(l, r);
         return u(e);
