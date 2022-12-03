@@ -1,14 +1,60 @@
 #include"database.h"
 #include"Win_define.h"
-#include<iostream>
+#include<ctime>
+#include<format>
 using std::cin;
+using std::vector;
+using std::cout;
 
-
+extern Processtodo proc;
 
 void StudentApply() {
-	cls();
-
-
+	cls(); 
+	int keyin;
+	{
+		vector<string>applyinfo;
+		if (proc.checkapply(applyinfo)) {
+			gotoxy(30, 5, "您的申请状态：");
+			cout << applyinfo[0];
+			int temp = stoi(applyinfo[5]);
+			switch (temp) {
+			case 0: gotoxy(30, 10, "出入校方式：仅出校");
+				gotoxy(30, 15, "出校时间");
+				cout << applyinfo[2];
+				break;
+			case 1: gotoxy(30, 10, "出入校方式：仅进校");
+				gotoxy(30, 15, "进校时间:");
+				cout << applyinfo[1];
+				break;
+			case 2: gotoxy(30, 10, "出入校方式：当天先进后出");
+				gotoxy(30, 15, "进出校时间：");
+				cout << applyinfo[1];
+				break;
+			case 3: gotoxy(30, 10, "出入校方式：当天先出后进");
+				gotoxy(30, 15, "进出校时间");
+				cout << applyinfo[1];
+				break;
+			}
+			gotoxy(130, 35, "[ESC}退出");
+			int keyin;
+			while (1) {
+				keyin = _getch() - 48;
+				if (keyin == -21) return;
+			}
+		}
+		gotoxy(30, 10, "未查询到申请记录");
+		gotoxy(30, 20, "[1]提交新申请");
+		gotoxy(30, 25, "[ESC]退出");
+		while (1) {
+			keyin = _getch() - 48;
+			if (keyin == -21) {
+				cls();
+				return;
+			}
+			//else if (keyin == 1) proc.toapply();
+		}
+		
+	}
 }
 
 void BasicDataStream() {

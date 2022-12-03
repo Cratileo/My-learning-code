@@ -1,6 +1,8 @@
 #pragma once
 #include<string>
+#include<vector>
 using std::string;
+using std::vector;
 
 class Studentinfo {
 public:
@@ -12,16 +14,15 @@ public:
 	string classnum = "NA";
 	string vaccine = "NA";
 	struct PCR {
-		string date = "000";
-		string consequence = "NA";
+		string PCRdate = "000";
+		string PCRconsequence = "NA";
 	};
-	struct Apply {
-		string state = "000";
-		string Indate = "000";
-		string Outdate = "000";
-		string reason = "NA";
-		string campus = "NA";
-	};
+	string Applystate = "000";
+	string ApplyIndate = "000";
+	string ApplyOutdate = "000";
+	string Applyreason = "NA";
+	string Applycampus = "NA";
+	string Applyway = "0";
 };
 
 class Processtodo {
@@ -32,11 +33,13 @@ public:
 	void Infoprocess(string&);//二次分割数据入库
 	string SearchAndCheck(const string&);//数据搜索与查重
 	void readtest();//test
+	bool checkapply(vector<string>& info);//查询是否存在申请以及返回申请记录
+	void toapply();//进行申请
 };
 
 
 
-bool checkaccount(string,string);  //校验输入账号是否存在
+char checkaccount(string,string);  //校验输入账号是否存在
 
 void SearchPCR();//核酸检测结果查询页面
 

@@ -2,20 +2,57 @@
 #include"database.h"
 #include<sstream>
 #include<fstream>
-#include<vector>
 #include<cstdlib>
 #include<format>//debug临时引用，release中记得删
 #include<memory>
 using namespace std;
 
-static Processtodo proc;
+extern string accountNOW = "000";
+
+extern Processtodo proc{};
 
 extern int datanum = 0;//初始学生数据条数
 
 const char* file = "data.dat";//数据文件
 
-bool checkaccount(string acc, string pw) {
-	return 1;
+char checkaccount(string acc, string pw) {
+	ifstream fread;
+	vector<vector<string> >serach;
+	vector<string>temparr;
+	string tempA;
+
+	//account.txt文件内储存账号，密码，学工号,类型四条信息，目前未加密，期望实现RSA加密
+	fread.open("account.txt", ios_base::in);
+	if (!fread.is_open()) {
+		cerr << "ERROR,CAN NOT OPEN THIS FILE.";
+		exit(EXIT_FAILURE);
+	}
+
+	serach.resize(100);
+	int ct = 0;
+	fread.ignore();
+
+	while (getline(fread, tempA)) {
+		fread >> tempA;
+		string temp;
+		stringstream ss(tempA);
+		while (getline(ss, temp, ','))
+			serach[ct].push_back(temp);
+		ct++;
+	}
+
+	fread.close();
+	serach.resize(ct - 1);
+
+	for (auto tp : serach) {
+		if (tp[0] == acc)
+			if (tp[1] == pw) {
+				accountNOW = tp[2];
+				if (tp[3] == "student") return 'S';
+				else if (tp[3] == "teacher") return 'T';
+			}
+	}
+	return 'F';
 }
 
 void streamprocess(string& str) {
@@ -131,4 +168,30 @@ void Processtodo::readtest() {
 		}
 	}
 	fread.close();
+}
+
+bool Processtodo::checkapply(vector<string>& info) {
+	ifstream fread;
+	{
+		Studentinfo st;
+		fread.open(file, ios_base::in | ios_base::binary);
+		fread.seekg(0);
+		while (fread.read((char*)&st, sizeof Studentinfo)) {
+			if (st.id == accountNOW) {
+				if (st.Applystate != "000") {
+					info.push_back(st.Applystate);
+					info.push_back(st.ApplyIndate);
+					info.push_back(st.ApplyOutdate);
+					info.push_back(st.Applyreason);
+					info.push_back(st.Applycampus);
+					info.push_back(st.Applyway);
+					fread.close();
+					return true;
+				}
+				else break;
+			}
+		}
+		fread.close();
+		return false;
+	}
 }

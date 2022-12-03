@@ -5,11 +5,13 @@
 
 using namespace std;
 
+extern string accountNOW;//现在登录者的账号（学号）
+
 void initialize();//初始化窗口
 void Mainmenu();  //主菜单
 void teacher();//教师端首页
 void studentpage();//学生端首页
-bool login();// 登录界面
+char login();// 登录界面
 
 int main()
 {
@@ -29,29 +31,22 @@ void initialize()
 
 void Mainmenu() {
 	gotoxy(60, 10, "交通大学疫情防控一站式系统");
-	gotoxy(40, 30, "[1]行政通道");
-	gotoxy(100, 30, "[2]学生通道");
-	gotoxy(5, 38, "[ESC]退出");
 	gotoxy(130, 38, "Alpha 1.0.0");
-	int keyin;
-	while (1) {
-		keyin = _getch() - 48;
-		if (keyin == -21) exit(0);
-		if (keyin == 1 || keyin == 2) break;
-	}
+	char state = login();
+	
 
 	cls();
-	if (keyin == 1) {
+	if (state == 'T') {
 		teacher();
 		Mainmenu();
 	}
-	else if (keyin == 2) {
+	else if (state == 'S') {
 		studentpage();
 		Mainmenu();
 	}
 }
 
-bool login()
+char login()
 {
 	int keyin;
 	cls();
@@ -65,21 +60,22 @@ bool login()
 
 		gotoxy(65, 25, "账号:_______________");
 		gotoxy(65, 30, "密码:______________");
-		gotoxy(10, 35, "[ESC]返回");
+		gotoxy(10, 35, "[ESC]退出");
 		gotoxy(70, 25);
 		int keyin;
 		keyin = _getch() - 48;
 		if (keyin == -21) {
 			cls();
-			return false;
+			exit(0);
 		}
 		showcursor();
 		getline(cin, accountT);
 		gotoxy(70, 30);
 		getline(cin, passwordT);
 		hidecursor();
-		if (checkaccount(accountT, passwordT))
-			return true;
+		char state = checkaccount(accountT,passwordT);//记录登陆人员身份,S为student，T为teacher
+		if (state=='S' || state == 'T')
+			return state;
 		else {
 			gotoxy(95, 28, "* 账号不存在或密码错误");
 			continue;
@@ -115,6 +111,8 @@ void teacher() {
 }
 
 void studentpage() {
+	
+
 	int keyin;
 	gotoxy(25, 10, "[1]核酸检测查询");
 	gotoxy(25, 13, "[2]学生进出校申请");
