@@ -17,19 +17,19 @@ void StudentApply() {
 			cout << applyinfo[0];
 			int temp = stoi(applyinfo[5]);
 			switch (temp) {
-			case 0: gotoxy(30, 10, "出入校方式：仅出校");
+			case 1: gotoxy(30, 10, "出入校方式：仅出校");
 				gotoxy(30, 15, "出校时间");
 				cout << applyinfo[2];
 				break;
-			case 1: gotoxy(30, 10, "出入校方式：仅进校");
+			case 2: gotoxy(30, 10, "出入校方式：仅进校");
 				gotoxy(30, 15, "进校时间:");
 				cout << applyinfo[1];
 				break;
-			case 2: gotoxy(30, 10, "出入校方式：当天先进后出");
+			case 3: gotoxy(30, 10, "出入校方式：当天先进后出");
 				gotoxy(30, 15, "进出校时间：");
 				cout << applyinfo[1];
 				break;
-			case 3: gotoxy(30, 10, "出入校方式：当天先出后进");
+			case 4: gotoxy(30, 10, "出入校方式：当天先出后进");
 				gotoxy(30, 15, "进出校时间");
 				cout << applyinfo[1];
 				break;
