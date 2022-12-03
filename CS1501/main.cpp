@@ -84,12 +84,6 @@ char login()
 }
 
 void teacher() {
-	bool flag=login();
-	if (!flag)
-	{
-		cls();
-		return;
-	}
 	cls();
 	gotoxy(70, 10, "欢迎");
 	gotoxy(25, 15, "[1]学生基本信息录入");

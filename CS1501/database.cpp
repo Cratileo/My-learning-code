@@ -3,9 +3,12 @@
 #include<sstream>
 #include<fstream>
 #include<cstdlib>
+#include<atltime.h>	//获取系统时间
 #include<format>//debug临时引用，release中记得删
 #include<memory>
 using namespace std;
+
+CTime t1 = CTime::GetCurrentTime();
 
 extern string accountNOW = "000";
 
@@ -42,6 +45,9 @@ char checkaccount(string acc, string pw) {
 	}
 
 	fread.close();
+	/*将account.txt中的数据写入serach二维数组中,遍历这个数组匹配账号和密码，
+	并返回匹配的账户种类，进入对应的页面，实现账号系统分离*/
+
 	serach.resize(ct - 1);
 
 	for (auto tp : serach) {
@@ -59,6 +65,8 @@ void streamprocess(string& str) {
 	stringstream ss(str);
 	string temp;
 	vector<string>temparr;
+
+	/*用stringstream函数处理输入的字符串，以';'为条目分隔符，','为条目中的信息分隔符*/
 
 	while (getline(ss, temp, ';'))
 		temparr.push_back(temp);
@@ -112,6 +120,7 @@ void Processtodo::Infoprocess(string& str) {
 	ofstream fout(file, ios_base::out | ios_base::app | ios_base::binary);
 	if (!fout.is_open()) {
 		cerr << "无法打开" << file << ",出现错误";
+		Sleep(800);
 		exit(EXIT_FAILURE);
 	}
 
@@ -124,7 +133,7 @@ void Processtodo::Infoprocess(string& str) {
 	st.classnum = temparr[4];
 	st.vaccine = temparr[6];
 
-	fout.write((char*)&st, sizeof Studentinfo);	
+	fout.write((char*)&st, sizeof Studentinfo) << flush;
 	fout.close();
 }
 
@@ -156,16 +165,16 @@ void Processtodo::readtest() {
 		fread.seekg(0);
 		while (fread.read((char*)&st, sizeof Studentinfo)) {
 			cout <<
-				format("{} {} {} {} {} {} {}", st.name, st.id, st.telephone, st.school, st.address, st.classnum, st.vaccine)
+				format("{} {} {} {} {} {} {}", st.name, st.id, st.telephone, st.school, st.classnum, st.address, st.vaccine)
 				<< endl;
 		}
-		if (fread.eof())
+/*		if (fread.eof())
 			fread.clear();
 		else
 		{
 			cerr << "ERROR";
 			exit(EXIT_FAILURE);
-		}
+		}*/
 	}
 	fread.close();
 }
@@ -191,7 +200,89 @@ bool Processtodo::checkapply(vector<string>& info) {
 				else break;
 			}
 		}
-		fread.close();
-		return false;
 	}
+	fread.close();
+	return false;
+}
+
+void Processtodo::toapply() {
+	fstream finout;
+	finout.open(file, ios::in | ios::out | ios::binary);
+	{
+		Studentinfo st;
+		string name;
+		long ct = 0;
+		if (!finout.is_open()) {
+			cerr << file << " could not be opened";
+			Sleep(1000);
+			exit(EXIT_FAILURE);
+		}
+		finout.seekg(0);
+
+		while (finout.read((char*)&st, sizeof Studentinfo)) {
+			if (st.id == accountNOW) {
+				name = st.name;
+				break;
+			}
+			ct++;
+		}
+		streampos place = ct * sizeof Studentinfo;	//用于记录该条记录的位置，不必重复重头查，优化程序
+
+		while (1) {
+			cls();
+			gotoxy(60, 5, "上海交通大学学生进出校审批流程");
+			gotoxy(30, 10, "姓名：");
+			cout << name;
+			gotoxy(70, 10, "学号：");
+			cout << accountNOW;
+			gotoxy(30, 13, "进出校方式（填数字），[1]仅进校；[2]仅出校;[3]先进后出;[4]先出后进:   ");
+			showcursor();
+			getline(cin, st.Applyway);
+
+			if (st.Applyway == "1") {
+				gotoxy(30, 16, "进校时间，格式YYMMDD，如20221202:  ");
+				getline(cin, st.ApplyIndate);
+			}
+			else if (st.Applyway == "2") {
+				gotoxy(30, 16, "出校时间，格式YYMMDD，如20221202:  ");
+				getline(cin, st.ApplyOutdate);
+			}
+			else if (st.Applyway == "3" || st.Applyway == "4") {
+				gotoxy(30, 16, "进校时间，格式YYMMDD，如20221202:  ");
+				gotoxy(30, 19, "出校时间，格式YYMMDD，如20221202:  ");
+				gotoxy(80, 16);
+				getline(cin, st.ApplyIndate);
+				gotoxy(80, 19);
+				getline(cin, st.ApplyOutdate);
+			}
+			else {
+				cout << "数据错误，重新开始流程";
+				Sleep(1000);
+				continue;
+			}
+
+			gotoxy(30, 22, "选择校区[1]徐汇校区，[2]闵行校区   ");
+			getline(cin, st.Applycampus);
+			gotoxy(30, 25, "理由填写：");
+			getline(cin, st.Applyreason);
+
+			//applystate为审批状态（“000”为默认无审批，“W”为待审批，“P”为审批通过，“B”为审批驳回）
+			st.Applystate = "待审核";
+			if (st.Applycampus != "1" && st.Applycampus != "2") {
+				cout << "数据错误，重新开始流程";
+				Sleep(1000);
+				continue;
+			}
+			break;
+		}
+		//开始写入文件
+		finout.seekg(place);
+		finout.write((char*)&st, sizeof Studentinfo) << flush;
+		if (finout.fail()) {
+			cerr << "ERROR,无法读写文件";
+			Sleep(1000);
+			exit(EXIT_FAILURE);
+		}
+	}
+	finout.close();
 }

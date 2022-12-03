@@ -13,16 +13,20 @@ public:
 	string address = "NA";
 	string classnum = "NA";
 	string vaccine = "NA";
+
 	struct PCR {
 		string PCRdate = "000";
 		string PCRconsequence = "NA";
 	};
+
 	string Applystate = "000";
 	string ApplyIndate = "000";
 	string ApplyOutdate = "000";
 	string Applyreason = "NA";
 	string Applycampus = "NA";
-	string Applyway = "0";
+	string Applyway = "1";
+
+	PCR pcrinfo[7];//支持查询最近七次核酸记录
 };
 
 class Processtodo {

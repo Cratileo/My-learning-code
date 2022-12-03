@@ -1,6 +1,5 @@
 #include"database.h"
 #include"Win_define.h"
-#include<ctime>
 #include<format>
 using std::cin;
 using std::vector;
@@ -51,7 +50,13 @@ void StudentApply() {
 				cls();
 				return;
 			}
-			//else if (keyin == 1) proc.toapply();
+			else if (keyin == 1) {
+				proc.toapply();
+				gotoxy(30, 35, "…Í«Î≥…π¶");
+				Sleep(500);
+				cls();
+				return;
+			}
 		}
 		
 	}
