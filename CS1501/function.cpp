@@ -38,7 +38,10 @@ void StudentApply() {
 			int keyin;
 			while (1) {
 				keyin = _getch() - 48;
-				if (keyin == -21) return;
+				if (keyin == -21) {
+					cls();
+					return;
+				}
 			}
 		}
 		gotoxy(30, 10, "Œ¥≤È—ØµΩ…Í«Îº«¬º");
