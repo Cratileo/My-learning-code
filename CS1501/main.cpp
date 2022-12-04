@@ -84,23 +84,26 @@ char login()
 }
 
 void teacher() {
-	cls();
-	gotoxy(70, 10, "欢迎");
-	gotoxy(25, 15, "[1]学生基本信息录入");
-	gotoxy(25, 20, "[2]学生核酸信息录入");
-	gotoxy(25, 25, "[3]宿舍楼信息录入");
-	gotoxy(95, 15, "[4]核酸信息查询");
-	gotoxy(95, 20, "[5]学生进出校审批");
-	gotoxy(95, 25, "[6]学生宿舍楼管理");
-	gotoxy(10, 35, "[ESC]退出登录");
-	int keyin;
-	int tempnum[7] = { 1,2,3,4,5,6,-21 };
-	keyin = checknum(tempnum, 7);
-	switch (keyin) {
-		case 1: BasicDataStream(); break;
-		case 2: PCRDataStream(); break;
-		case 4: SearchPCR(); break;
-		case -21: cls();  return;
+	while(1){
+		cls();
+		gotoxy(70, 10, "欢迎");
+		gotoxy(25, 15, "[1]学生基本信息录入");
+		gotoxy(25, 20, "[2]学生核酸信息录入");
+		gotoxy(25, 25, "[3]宿舍楼信息录入");
+		gotoxy(95, 15, "[4]核酸信息查询");
+		gotoxy(95, 20, "[5]学生进出校审批");
+		gotoxy(95, 25, "[6]学生宿舍楼管理");
+		gotoxy(10, 35, "[ESC]退出登录");
+		int keyin;
+		int tempnum[7] = { 1,2,3,4,5,6,-21 };
+		keyin = checknum(tempnum, 7);
+		switch (keyin) {
+			case 1: BasicDataStream(); break;
+			case 2: PCRDataStream(); break;
+			case 4: SearchPCR(); break;
+			case 5: Application(); break;
+			case -21: cls();  return;
+		}
 	}
 }
 

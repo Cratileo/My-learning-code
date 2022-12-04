@@ -15,26 +15,24 @@ void StudentApply() {
 		if (proc.checkapply(applyinfo)) {
 			gotoxy(30, 5, "您的申请状态：");
 			cout << applyinfo[0];
-			int temp = stoi(applyinfo[5]);
-			switch (temp) {
-			case 1: gotoxy(30, 10, "出入校方式：仅出校");
-				gotoxy(30, 15, "出校时间");
+			{
+				gotoxy(30, 10, "出入校方式：");
+				cout << applyinfo[5];
+				gotoxy(30, 13, "出校时间: ");
 				cout << applyinfo[2];
-				break;
-			case 2: gotoxy(30, 10, "出入校方式：仅进校");
-				gotoxy(30, 15, "进校时间:");
+				gotoxy(30, 16, "进校时间: ");
 				cout << applyinfo[1];
-				break;
-			case 3: gotoxy(30, 10, "出入校方式：当天先进后出");
-				gotoxy(30, 15, "进出校时间：");
-				cout << applyinfo[1];
-				break;
-			case 4: gotoxy(30, 10, "出入校方式：当天先出后进");
-				gotoxy(30, 15, "进出校时间");
-				cout << applyinfo[1];
-				break;
+				gotoxy(30, 19, "申请校区: ");
+				cout << applyinfo[4];
 			}
 			gotoxy(130, 35, "[ESC}退出");
+
+			if (applyinfo[0] != "待审核")
+				gotoxy(130, 32, "[1]重新申请");
+
+			else if (applyinfo[0] == "待审核")
+				gotoxy(130, 32, "[1]删除申请");
+
 			int keyin;
 			while (1) {
 				keyin = _getch() - 48;
@@ -42,6 +40,21 @@ void StudentApply() {
 					cls();
 					return;
 				}
+				if (applyinfo[0] != "待审核" && keyin == 1) {
+					proc.toapply();
+					gotoxy(30, 35, "申请成功");
+					Sleep(500);
+					cls();
+					return;
+				}
+				if (applyinfo[0] == "待审核" && keyin == 1) {
+					proc.deleteapply();
+					gotoxy(30, 35, "删除成功");
+					Sleep(500);
+					cls();
+					return;
+				}
+
 			}
 		}
 		gotoxy(30, 10, "未查询到申请记录");
@@ -96,4 +109,19 @@ void BasicDataStream() {
 
 void PCRDataStream() {
 
+}
+
+void Application() {
+	cls();
+	gotoxy(30, 2, "当前存在的待审批条目：");
+	proc.teacherapply();
+	gotoxy(120, 35, "[ESC]退出");
+	int keyin;
+	while (1) {
+		keyin = _getch() - 48;
+		if (keyin == -21) {
+			cls();
+			return;
+		}
+	}
 }

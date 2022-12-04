@@ -39,6 +39,8 @@ public:
 	void readtest();//test
 	bool checkapply(vector<string>& info);//查询是否存在申请以及返回申请记录
 	void toapply();//进行申请
+	void deleteapply();//学生删除申请
+	void teacherapply();//教师审批出入校
 };
 
 
@@ -55,4 +57,4 @@ void PCRDataStream();//录入核酸信息
 
 void streamprocess(string&);	//处理字符串分割
 
-
+void Application();	//进出校申请教师端

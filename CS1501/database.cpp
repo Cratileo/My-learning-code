@@ -240,14 +240,18 @@ void Processtodo::toapply() {
 			getline(cin, st.Applyway);
 
 			if (st.Applyway == "1") {
+				st.Applyway = "仅进校";
 				gotoxy(30, 16, "进校时间，格式YYMMDD，如20221202:  ");
 				getline(cin, st.ApplyIndate);
 			}
 			else if (st.Applyway == "2") {
+				st.Applyway = "仅出校";
 				gotoxy(30, 16, "出校时间，格式YYMMDD，如20221202:  ");
 				getline(cin, st.ApplyOutdate);
 			}
 			else if (st.Applyway == "3" || st.Applyway == "4") {
+				if (st.Applyway == "3") st.Applyway = "先进后出";
+				else st.Applyway = "先出后进";
 				gotoxy(30, 16, "进校时间，格式YYMMDD，如20221202:  ");
 				gotoxy(30, 19, "出校时间，格式YYMMDD，如20221202:  ");
 				gotoxy(80, 16);
@@ -263,12 +267,14 @@ void Processtodo::toapply() {
 
 			gotoxy(30, 22, "选择校区[1]徐汇校区，[2]闵行校区   ");
 			getline(cin, st.Applycampus);
+			if (st.Applycampus == "1") st.Applycampus = "徐汇校区";
+			else if (st.Applycampus == "2") st.Applycampus = "闵行校区";
 			gotoxy(30, 25, "理由填写：");
 			getline(cin, st.Applyreason);
 
-			//applystate为审批状态（“000”为默认无审批，“W”为待审批，“P”为审批通过，“B”为审批驳回）
+			//applystate为审批状态（“000”为默认无审批）
 			st.Applystate = "待审核";
-			if (st.Applycampus != "1" && st.Applycampus != "2") {
+			if (st.Applycampus != "徐汇校区" && st.Applycampus != "闵行校区") {
 				cout << "数据错误，重新开始流程";
 				Sleep(1000);
 				continue;
@@ -283,6 +289,82 @@ void Processtodo::toapply() {
 			Sleep(1000);
 			exit(EXIT_FAILURE);
 		}
+	}
+	finout.close();
+	hidecursor();
+}
+
+void Processtodo::teacherapply() {
+	fstream finout;
+	finout.open(file, ios::in | ios::out | ios::binary);
+	{
+		Studentinfo st;
+		string name;
+		if (!finout.is_open()) {
+			cerr << file << " could not be opened";
+			Sleep(1000);
+			exit(EXIT_FAILURE);
+		}
+		finout.seekg(0);
+
+		gotoxy(0, 5);
+		showcursor();
+
+		long ct = 0;
+		while (finout.read((char*)&st, sizeof Studentinfo)) {
+			if (st.Applystate == "待审核") {
+				cout <<
+					format("姓名：{}；学号{}；学院{}；班级：{}；进出校方式：{}；进校时间：{}；出校时间：{}；校区：{}"
+					, st.name, st.id, st.school, st.classnum, st.Applyway, st.ApplyIndate, st.ApplyOutdate, st.Applycampus);
+				cout << "\n理由：" << st.Applyreason << endl;
+				cout << "审批意见：[1]同意；[2]驳回   ";
+				while (1) {
+					int keyin;
+					cin >> keyin;
+					if (keyin == 1) {
+						st.Applystate = "已通过";
+						break;
+					}
+					else if (keyin == 2) {
+						st.Applystate = "已驳回";
+						break;
+					}
+				}
+				streampos place = ct * sizeof Studentinfo;
+				finout.seekg(place);
+				finout.write((char*)&st, sizeof Studentinfo) << flush;
+			}
+			ct++;
+		}
+	}
+	finout.close();
+	hidecursor();
+}
+
+void Processtodo::deleteapply() {
+	fstream finout;
+	finout.open(file, ios::in | ios::out | ios::binary);
+	{
+		Studentinfo st;
+		string name;
+		long ct = 0;
+		if (!finout.is_open()) {
+			cerr << file << " could not be opened";
+			Sleep(1000);
+			exit(EXIT_FAILURE);
+		}
+		finout.seekg(0);
+
+		while (finout.read((char*)&st, sizeof Studentinfo)) {
+			if (st.id == accountNOW) {
+				st.Applystate = "000";
+				break;
+			}
+			ct++;
+		}
+		streampos place = ct * sizeof Studentinfo;	//用于记录该条记录的位置，不必重复重头查，优化程序
+		finout.seekg(place);
+		finout.write((char*)&st, sizeof Studentinfo) << flush;
 	}
 	finout.close();
 }
