@@ -156,6 +156,6 @@ void gotoxy(const int x, const int y, std::string str)
 
     void printline(int x)
     {
-        for (int i = 1; i <= 80; i++)
-            gotoxy(x, i, "-");
+        for (int i = 1; i <= 150; i++)
+            gotoxy(i, x, "-");
     }

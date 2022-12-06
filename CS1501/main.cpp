@@ -48,7 +48,6 @@ void Mainmenu() {
 
 char login()
 {
-	int keyin;
 	cls();
 	while (1) {
 		string accountT, passwordT;
@@ -60,14 +59,7 @@ char login()
 
 		gotoxy(65, 25, "ÕËºÅ:_______________");
 		gotoxy(65, 30, "ÃÜÂë:______________");
-		gotoxy(10, 35, "[ESC]ÍË³ö");
 		gotoxy(70, 25);
-		int keyin;
-		keyin = _getch() - 48;
-		if (keyin == -21) {
-			cls();
-			exit(0);
-		}
 		showcursor();
 		getline(cin, accountT);
 		gotoxy(70, 30);
@@ -102,6 +94,7 @@ void teacher() {
 			case 2: PCRDataStream(); break;
 			case 4: SearchPCR(); break;
 			case 5: Application(); break;
+			case 6: DormitoryManage(); break;
 			case -21: cls();  return;
 		}
 	}

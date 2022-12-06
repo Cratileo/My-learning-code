@@ -3,12 +3,11 @@
 #include<sstream>
 #include<fstream>
 #include<cstdlib>
-#include<atltime.h>	//获取系统时间
 #include<format>//debug临时引用，release中记得删
 #include<memory>
 using namespace std;
 
-CTime t1 = CTime::GetCurrentTime();
+COleDateTime timenow(COleDateTime::GetCurrentTime());//系统当前时间
 
 extern string accountNOW = "000";
 
@@ -16,7 +15,9 @@ extern Processtodo proc{};
 
 extern int datanum = 0;//初始学生数据条数
 
-const char* file = "data.dat";//数据文件
+const char* file = "data.dat";//学生数据文件
+
+const char* domfile = "dom.dat";	//宿舍楼数据文件
 
 char checkaccount(string acc, string pw) {
 	ifstream fread;
@@ -28,6 +29,7 @@ char checkaccount(string acc, string pw) {
 	fread.open("account.txt", ios_base::in);
 	if (!fread.is_open()) {
 		cerr << "ERROR,CAN NOT OPEN THIS FILE.";
+		Sleep(300);
 		exit(EXIT_FAILURE);
 	}
 
@@ -95,6 +97,7 @@ void SearchPCR() {
 void Processtodo::Infoprocess(string& str) {
 	stringstream ss(str);
 	Studentinfo st;
+	Dormitory dom;
 	string temp;
 	vector<string>temparr;
 
@@ -117,10 +120,11 @@ void Processtodo::Infoprocess(string& str) {
 		return;
 	}*/
 
-	ofstream fout(file, ios_base::out | ios_base::app | ios_base::binary);
+	ofstream fout(file, ios_base::out | ios_base::app | ios_base::binary);	  //这是用来写学生信息的
+
 	if (!fout.is_open()) {
 		cerr << "无法打开" << file << ",出现错误";
-		Sleep(800);
+		Sleep(500);
 		exit(EXIT_FAILURE);
 	}
 
@@ -135,6 +139,43 @@ void Processtodo::Infoprocess(string& str) {
 
 	fout.write((char*)&st, sizeof Studentinfo) << flush;
 	fout.close();
+
+	fstream fdom(domfile, ios_base::in | ios_base::out | ios_base::binary);//这是用来写宿舍信息的
+	if (!fdom.is_open()) {
+		cerr << "无法打开dom.dat,出现错误";
+		Sleep(500);
+		exit(EXIT_FAILURE);
+	}
+
+	fdom.seekg(0);
+	long ct = 0;
+	while (fdom.read((char*)&dom, sizeof Dormitory)) {
+		if (temparr[5] == dom.buildingname) {
+			dom.people++;
+			//开始写入
+			streampos place = ct * sizeof Dormitory;
+			fdom.seekg(place);
+			fdom.write((char*)&dom, sizeof Dormitory) << flush;
+
+			if (fdom.fail()) {
+				cerr << "ERROR,无法读写文件";
+				Sleep(600);
+				exit(EXIT_FAILURE);
+			}
+			fdom.close();
+			return;
+		}
+		ct++;
+	}
+	fdom.close();
+
+	//如果不存在该宿舍楼，追加
+	ofstream fdomadd(domfile, ios_base::out | ios_base::app | ios_base::binary);
+	dom.buildingname = temparr[5];
+	dom.state = "正常";
+	dom.people = 1;
+	fdomadd.write((char*)&dom, sizeof Dormitory) << flush;
+	fdomadd.close();
 }
 
 string Processtodo::SearchAndCheck(const string &idT) {
@@ -367,4 +408,138 @@ void Processtodo::deleteapply() {
 		finout.write((char*)&st, sizeof Studentinfo) << flush;
 	}
 	finout.close();
+}
+
+void Processtodo::getPCR() {
+	ifstream fread;
+	fread.open(domfile, ios_base::in | ios_base::binary);
+	fread.seekg(0);
+	gotoxy(60, 3, "各楼栋核酸信息如下");
+	gotoxy(0, 5, "楼栋          总人数          已检测人数");
+	gotoxy(0, 7);
+	{
+		Dormitory dom;
+		while (fread.read((char*)&dom, sizeof Dormitory))
+			cout << format("{}            {}            {}", dom.buildingname, dom.people, dom.PCRpeople) << endl;
+	}
+	fread.close();
+}
+
+void Processtodo::setstate(string& dormname) {
+	fstream finout;
+	finout.open("dom.dat", ios::in | ios::out | ios::binary);
+	{
+		Dormitory dom;
+		long ct = 0;
+		bool flag = false;
+
+		if (!finout.is_open()) {
+			cerr << file << " could not be opened";
+			Sleep(1000);
+			exit(EXIT_FAILURE);
+		}
+		finout.seekg(0);
+
+		while (finout.read((char*)&dom, sizeof Dormitory)) {
+			if (dom.buildingname == dormname) {
+				flag = true;
+				break;
+			}
+			ct++;
+		}
+
+		if (!flag) {
+			gotoxy(80, 15, "找不到该宿舍楼信息");
+			return;
+		}
+
+		streampos place = ct * sizeof Studentinfo;
+		gotoxy(30, 5, "宿舍状态：");
+		cout << dom.state;
+
+		if (dom.state == "封控") {
+			CString start, end;//封控起始与开始时间标识
+			start = dom.starttime.Format(_T("%Y年%m月%d日"));
+			end = dom.endtime.Format(_T("%Y年%m月%d日"));
+
+			gotoxy(30, 8, "起始时间: ");
+			wcout << start;
+			gotoxy(30, 11, "结束时间: ");
+			wcout << end;
+
+			gotoxy(30, 15, "修改");
+			printline(14);
+			gotoxy(30, 17, "解除该楼封控:[Y/N](按键盘上的对应按键)   ");
+			int keyin;
+			while (1) {
+				keyin = _getch();
+				if (keyin == 121) {
+					dom.state = "正常";
+					break;
+				}
+				else if (keyin == 110)
+					break;
+			}
+		}
+		else {
+			gotoxy(30, 12, "修改");
+			printline(13);
+			gotoxy(30, 15, "设置该楼封控:[Y/N](按键盘上的对应按键)   ");
+			int keyin;
+			while (1) {
+				keyin = _getch();
+				if (keyin == 121) {
+					dom.state = "封控";
+					int styear, stmonth, stday, edyear, edmonth, edday;
+					showcursor();
+					while (1) {
+						gotoxy(30, 17, "起始时间：");
+						cin >> styear;
+						gotoxy(45, 17, "年  ");
+						cin >> stmonth;
+						gotoxy(55, 17, "月  ");
+						cin >> stday;
+						gotoxy(65, 17, "日");
+						
+						gotoxy(30, 20, "结束时间：");
+						cin >> edyear;
+						gotoxy(45, 20, "年  ");
+						cin >> edmonth;
+						gotoxy(55, 20, "月  ");
+						cin >> edday;
+						gotoxy(65, 20, "日");
+
+						dom.starttime.SetDate(styear, stmonth, stday);
+						dom.endtime.SetDate(edyear, edmonth, edday);
+						COleDateTimeSpan ts = dom.endtime - dom.starttime;//校验解封日期必须大于封控日期
+
+						if (dom.starttime.GetStatus() != COleDateTime::valid|| ts.GetTotalSeconds() <= 0|| dom.starttime<timenow) {
+							cerr << "时间填写错误！";
+							cls();
+							continue;
+						}
+						break;
+					}
+
+					break;
+				}
+				else if (keyin == 110)
+					break;
+			}
+		}
+		//开始写入
+		finout.seekg(place);
+		finout.write((char*)&dom, sizeof Dormitory) << flush;
+		if (finout.fail()) {
+			cerr << "ERROR,无法读写文件";
+			Sleep(1000);
+			exit(EXIT_FAILURE);
+		}
+	}
+	finout.close();
+	hidecursor();
+}
+
+void Processtodo::showdormitory() {
+
 }
